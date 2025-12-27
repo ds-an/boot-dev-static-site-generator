@@ -1,7 +1,6 @@
 from textnode import TextNode, TextType
 
 def main():
-    textnode = TextNode("bruh", TextType.PLAIN, "aging.com")
-    print(textnode)
+    print("Nothing here for now...")
 
 main()
