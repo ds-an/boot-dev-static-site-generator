@@ -1,6 +1,6 @@
 import unittest
 
-from block_handling import markdown_to_blocks
+from block_handling import BlockType, markdown_to_blocks, block_to_block_type
 
 class TestBlocks(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -40,4 +40,62 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
                 "This is a paragraph of text. It has some **bold** and _italic_ words inside of it.",
                 "- This is the first list item in a list block\n- This is a list item\n- This is another list item",
             ],
+        )
+    def test_block_to_block_type_heading(self):
+        md = """
+# This is a heading
+"""
+        block_type = block_to_block_type(md)
+        self.assertEqual(
+            block_type,
+            BlockType.HEADING
+        )
+    def test_block_to_block_type_code(self):
+        md = "```This is a code block```"
+        block_type = block_to_block_type(md)
+        self.assertEqual(
+            block_type,
+            BlockType.CODE
+        )
+    def test_block_to_block_type_quote(self):
+        md = ">This is a quote block\n>That continues here\n>And ends here"
+        block_type = block_to_block_type(md)
+        self.assertEqual(
+            block_type,
+            BlockType.QUOTE
+        )
+    def test_block_to_block_type_quote_2(self):
+        md = ">This is an invalid quote block\nThat continues here\n>And ends here"
+        block_type = block_to_block_type(md)
+        self.assertNotEqual(
+            block_type,
+            BlockType.QUOTE
+        )
+    def test_block_to_block_type_unordered_list(self):
+        md = "- This is an unordered list\n- That continues here\n- And ends here"
+        block_type = block_to_block_type(md)
+        self.assertEqual(
+            block_type,
+            BlockType.UNORDERED_LIST
+        )
+    def test_block_to_block_type_ordered_list(self):
+        md = "1. This is an ordered list\n2. That continues here\n3. And ends here"
+        block_type = block_to_block_type(md)
+        self.assertEqual(
+            block_type,
+            BlockType.ORDERED_LIST
+        )
+    def test_block_to_block_type_ordered_list_2(self):
+        md = "1. This is an invalid ordered list\n10. That continues here\n3. And ends here"
+        block_type = block_to_block_type(md)
+        self.assertNotEqual(
+            block_type,
+            BlockType.ORDERED_LIST
+        )
+    def test_block_to_block_type_paragraph(self):
+        md = "This is a paragraph"
+        block_type = block_to_block_type(md)
+        self.assertEqual(
+            block_type,
+            BlockType.PARAGRAPH
         )
