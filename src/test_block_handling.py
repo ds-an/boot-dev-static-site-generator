@@ -99,13 +99,13 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
             block_type,
             BlockType.PARAGRAPH
         )
-    def test_markdown_to_html_node(self):
-        md = "1. This is an ordered list\n2. That continues here\n3. And ends here\n\n- This is an unordered list\n- That continues here\n- And ends here"
-        block_type = markdown_to_html_node(md)
-        self.assertEqual(
-            block_type,
-            BlockType.PARAGRAPH
-        )
+    # def test_markdown_to_html_node(self):
+    #     md = "1. This is an ordered list\n2. That continues here\n3. And ends here\n\n- This is an unordered list\n- That continues here\n- And ends here"
+    #     block_type = markdown_to_html_node(md)
+    #     self.assertEqual(
+    #         block_type,
+    #         BlockType.PARAGRAPH
+    #     )
     def test_markdown_to_html_node_paragraphs(self):
         md = """
     This is **bolded** paragraph

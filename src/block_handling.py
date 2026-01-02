@@ -1,7 +1,7 @@
 from enum import Enum
 import re
 from htmlnode import LeafNode, ParentNode
-from textnode import text_node_to_html_node
+from textnode import TextNode, TextType, text_node_to_html_node
 from node_operations import text_to_textnodes
 
 class BlockType(Enum):
@@ -58,7 +58,12 @@ def markdown_to_blocks(markdown):
     return blocks
 
 def markdown_to_html_node(markdown):
+    print("Markdown: " + markdown)
     markdown_blocks = markdown_to_blocks(markdown)
+    print("Markdown Blocks: ")
+    print(markdown_blocks)
+    markdown_blocks = list(filter(lambda x: x != "", markdown_blocks))
+    print("Markdown Blocks Filtered: ")
     print(markdown_blocks)
     markdown_block_types = list(map(block_to_block_type, markdown_blocks))
     markdown_blocks_and_types = list(zip(markdown_blocks, markdown_block_types))
@@ -66,8 +71,18 @@ def markdown_to_html_node(markdown):
     for block, block_type in markdown_blocks_and_types:
         match block_type:
             case block_type.QUOTE:
+                split_block = block.split("\n")
+                split_block = list(filter(lambda x: x != "", split_block))
+                for line in split_block:
+                    line = line[:1]
+                block = "\n".join(split_block)
                 html_nodes.append(ParentNode("blockquote", list(map(text_node_to_html_node, text_to_textnodes(block)))))
             case block_type.PARAGRAPH:
+                split_block = block.split("\n")
+                split_block = [line.strip() for line in split_block]
+                # split_block = list(filter(lambda x: x != "", split_block))
+                block = " ".join(split_block)
+                print(block)
                 html_nodes.append(ParentNode("p", list(map(text_node_to_html_node, text_to_textnodes(block)))))
             case block_type.HEADING:
                 heading_level = 0 
@@ -78,7 +93,7 @@ def markdown_to_html_node(markdown):
                         break
                 html_nodes.append(ParentNode(f"h{heading_level}", list(map(text_node_to_html_node, text_to_textnodes(block)))))
             case block_type.CODE:
-                pre_node = ParentNode("pre", ParentNode("code", text_node_to_html_node(block)))
+                pre_node = ParentNode("pre", ParentNode("code", text_node_to_html_node(TextNode(block, TextType.CODE))))
                 html_nodes.append(pre_node)
             case block_type.UNORDERED_LIST:
                 split_list = block.split("\n")
@@ -95,4 +110,5 @@ def markdown_to_html_node(markdown):
                 for list_item in split_list:
                     list_items.append(ParentNode("li", list(map(text_node_to_html_node, text_to_textnodes(list_item)))))
                 html_nodes.append(ParentNode("ol", list_items))
+    # print(ParentNode("div", html_nodes).to_html())
     return ParentNode("div", html_nodes)
