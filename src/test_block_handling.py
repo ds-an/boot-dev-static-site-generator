@@ -99,13 +99,6 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
             block_type,
             BlockType.PARAGRAPH
         )
-    # def test_markdown_to_html_node(self):
-    #     md = "1. This is an ordered list\n2. That continues here\n3. And ends here\n\n- This is an unordered list\n- That continues here\n- And ends here"
-    #     block_type = markdown_to_html_node(md)
-    #     self.assertEqual(
-    #         block_type,
-    #         BlockType.PARAGRAPH
-    #     )
     def test_markdown_to_html_node_paragraphs(self):
         md = """
     This is **bolded** paragraph
@@ -123,17 +116,112 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
             "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
         )
 
-    # def test_markdown_to_html_node_codeblock(self):
-    #     md = """
-    # ```
-    # This is text that _should_ remain
-    # the **same** even with inline stuff
-    # ```
-    # """
-    #
-    #     node = markdown_to_html_node(md)
-    #     html = node.to_html()
-    #     self.assertEqual(
-    #         html,
-    #         "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
-    #     )
+    def test_markdown_to_html_node_codeblock(self):
+        md = """
+    ```
+    This is text that _should_ remain
+    the **same** even with inline stuff
+    ```
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+    def test_single_heading(self):
+        md = """
+    # This is a heading
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1>This is a heading</h1></div>",
+        )
+    def test_heading_with_inline(self):
+        md = """
+    ## This is a _fancy_ **heading**
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h2>This is a <i>fancy</i> <b>heading</b></h2></div>",
+        )
+    def test_single_line_quote(self):
+        md = """
+    > This is a quoted line
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a quoted line</blockquote></div>",
+        )
+    def test_multiline_quote_with_inline(self):
+        md = """
+    > This is a _multi-line_
+    > quote with **formatting**
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a <i>multi-line</i> quote with <b>formatting</b></blockquote></div>",
+        )
+    def test_unordered_list_simple(self):
+        md = """
+    - item one
+    - item two
+    - item three
+    """
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>item one</li><li>item two</li><li>item three</li></ul></div>",
+        )
+
+    def test_unordered_list_with_inline(self):
+        md = """
+    - plain
+    - with _italic_
+    - and **bold** text
+    """
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>plain</li><li>with <i>italic</i></li><li>and <b>bold</b> text</li></ul></div>",
+        )
+#     def test_ordered_list_simple(self):
+#         md = """
+# 1. first
+# 2. second
+# 3. third
+# """
+#         node = markdown_to_html_node(md)
+#         html = node.to_html()
+#         self.assertEqual(
+#             html,
+#             "<div><ol><li>first</li><li>second</li><li>third</li></ol></div>",
+#         )
+#
+#     def test_ordered_list_with_inline(self):
+#         md = """
+# 1. plain
+# 2. with _italic_
+# 3. and **bold** text
+# """
+#         node = markdown_to_html_node(md)
+#         html = node.to_html()
+#         self.assertEqual(
+#             html,
+#             "<div><ol><li>plain</li><li>with <i>italic</i></li><li>and <b>bold</b> text</li></ol></div>",
+#         )

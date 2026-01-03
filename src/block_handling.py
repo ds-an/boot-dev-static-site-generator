@@ -22,6 +22,7 @@ def block_to_block_type(markdown_block):
         return BlockType.CODE
     flag_quote = True
     for line in split_markdown_block:
+        line = line.lstrip(" ").strip()
         if not line.startswith(">"):
             flag_quote = False
             break
@@ -57,58 +58,88 @@ def markdown_to_blocks(markdown):
         blocks.append(line)
     return blocks
 
-def markdown_to_html_node(markdown):
-    print("Markdown: " + markdown)
+def quote_block_to_html_node(block):
+    split_block = block.split("\n")
+    for i in range(len(split_block)):
+        split_block[i] = split_block[i].lstrip(" ").strip()
+        split_block[i] = split_block[i].lstrip(">").strip()
+    block = " ".join(split_block)
+    return ParentNode("blockquote", list(map(text_node_to_html_node, text_to_textnodes(block))))
+
+def paragraph_block_to_html_node(block):
+    split_block = block.split("\n")
+    split_block = [line.strip() for line in split_block]
+    # split_block = list(filter(lambda x: x != "", split_block))
+    block = " ".join(split_block)
+    return ParentNode("p", list(map(text_node_to_html_node, text_to_textnodes(block))))
+
+def heading_block_to_html_node(block):
+    heading_level = 0 
+    for i in range(len(block)):
+        if block[i] == "#":
+            heading_level = heading_level + 1
+        else:
+            break
+    block = block[heading_level + 1:]
+    return ParentNode(f"h{heading_level}", list(map(text_node_to_html_node, text_to_textnodes(block))))
+
+def code_block_to_html_node(block):
+    block = block[4:-3]
+    block = block.strip(" ")
+    split_block = block.split("\n")
+    split_block = [line.strip() for line in split_block]
+    block = "\n".join(split_block)
+    pre_node = ParentNode("pre", [text_node_to_html_node(TextNode(block, TextType.CODE))])
+    return pre_node
+
+def unordered_list_block_to_html_node(block):
+    split_block = block.split("\n")
+    for i in range(len(split_block)):
+        split_block[i] = split_block[i].lstrip(" ").strip()
+        split_block[i] = split_block[i].lstrip("- ").strip()
+    list_items = []
+    for list_item in split_block:
+        list_items.append(ParentNode("li", list(map(text_node_to_html_node, text_to_textnodes(list_item)))))
+    return ParentNode("ul", list_items)
+
+def ordered_list_block_to_html_node(block):
+    split_block = block.split("\n")
+    number = 0
+    for i in range(len(split_block)):
+        number = number + 1
+        split_block[i] = split_block[i].lstrip(" ").strip()
+        split_block[i] = split_block[i].lstrip(f"{number}. ").strip()
+    list_items = []
+    for list_item in split_block:
+        list_items.append(ParentNode("li", list(map(text_node_to_html_node, text_to_textnodes(list_item)))))
+    return ParentNode("ol", list_items)
+
+def block_to_html_node(block, block_type):
+    match block_type:
+        case block_type.QUOTE:
+            return quote_block_to_html_node(block)
+        case block_type.PARAGRAPH:
+            return paragraph_block_to_html_node(block)
+        case block_type.HEADING:
+            return heading_block_to_html_node(block)
+        case block_type.CODE:
+            return code_block_to_html_node(block)
+        case block_type.UNORDERED_LIST:
+            return unordered_list_block_to_html_node(block)
+        case block_type.ORDERED_LIST:
+            return ordered_list_block_to_html_node(block)
+
+def markdown_to_blocks_and_types(markdown):
     markdown_blocks = markdown_to_blocks(markdown)
-    print("Markdown Blocks: ")
-    print(markdown_blocks)
     markdown_blocks = list(filter(lambda x: x != "", markdown_blocks))
-    print("Markdown Blocks Filtered: ")
-    print(markdown_blocks)
     markdown_block_types = list(map(block_to_block_type, markdown_blocks))
     markdown_blocks_and_types = list(zip(markdown_blocks, markdown_block_types))
+    return markdown_blocks_and_types
+
+
+def markdown_to_html_node(markdown):
+    markdown_blocks_and_types = markdown_to_blocks_and_types(markdown)
     html_nodes = []
     for block, block_type in markdown_blocks_and_types:
-        match block_type:
-            case block_type.QUOTE:
-                split_block = block.split("\n")
-                split_block = list(filter(lambda x: x != "", split_block))
-                for line in split_block:
-                    line = line[:1]
-                block = "\n".join(split_block)
-                html_nodes.append(ParentNode("blockquote", list(map(text_node_to_html_node, text_to_textnodes(block)))))
-            case block_type.PARAGRAPH:
-                split_block = block.split("\n")
-                split_block = [line.strip() for line in split_block]
-                # split_block = list(filter(lambda x: x != "", split_block))
-                block = " ".join(split_block)
-                print(block)
-                html_nodes.append(ParentNode("p", list(map(text_node_to_html_node, text_to_textnodes(block)))))
-            case block_type.HEADING:
-                heading_level = 0 
-                for i in range(len(block)):
-                    if block[i] == "#":
-                        heading_level = heading_level + 1
-                    else:
-                        break
-                html_nodes.append(ParentNode(f"h{heading_level}", list(map(text_node_to_html_node, text_to_textnodes(block)))))
-            case block_type.CODE:
-                pre_node = ParentNode("pre", ParentNode("code", text_node_to_html_node(TextNode(block, TextType.CODE))))
-                html_nodes.append(pre_node)
-            case block_type.UNORDERED_LIST:
-                split_list = block.split("\n")
-                split_list = list(filter(lambda x: x != "", split_list))
-                print(split_list)
-                list_items = []
-                for list_item in split_list:
-                    list_items.append(ParentNode("li", list(map(text_node_to_html_node, text_to_textnodes(list_item)))))
-                html_nodes.append(ParentNode("ul", list_items))
-            case block_type.ORDERED_LIST:
-                split_list = block.split("\n")
-                split_list = list(filter(lambda x: x != "", split_list))
-                list_items = []
-                for list_item in split_list:
-                    list_items.append(ParentNode("li", list(map(text_node_to_html_node, text_to_textnodes(list_item)))))
-                html_nodes.append(ParentNode("ol", list_items))
-    # print(ParentNode("div", html_nodes).to_html())
+        html_nodes.append(block_to_html_node(block, block_type))
     return ParentNode("div", html_nodes)
