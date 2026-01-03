@@ -30,6 +30,7 @@ def block_to_block_type(markdown_block):
         return BlockType.QUOTE
     flag_unordered_list = True
     for line in split_markdown_block:
+        line = line.lstrip(" ").strip()
         if not line.startswith("- "):
             flag_unordered_list = False
             break
@@ -38,6 +39,7 @@ def block_to_block_type(markdown_block):
     number = 0 
     flag_ordered_list = True
     for line in split_markdown_block:
+        line = line.lstrip(" ").strip()
         number = number + 1
         if not line.startswith(f"{number}. "):
             flag_ordered_list = False

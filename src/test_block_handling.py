@@ -200,28 +200,28 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
             html,
             "<div><ul><li>plain</li><li>with <i>italic</i></li><li>and <b>bold</b> text</li></ul></div>",
         )
-#     def test_ordered_list_simple(self):
-#         md = """
-# 1. first
-# 2. second
-# 3. third
-# """
-#         node = markdown_to_html_node(md)
-#         html = node.to_html()
-#         self.assertEqual(
-#             html,
-#             "<div><ol><li>first</li><li>second</li><li>third</li></ol></div>",
-#         )
-#
-#     def test_ordered_list_with_inline(self):
-#         md = """
-# 1. plain
-# 2. with _italic_
-# 3. and **bold** text
-# """
-#         node = markdown_to_html_node(md)
-#         html = node.to_html()
-#         self.assertEqual(
-#             html,
-#             "<div><ol><li>plain</li><li>with <i>italic</i></li><li>and <b>bold</b> text</li></ol></div>",
-#         )
+    def test_ordered_list_simple(self):
+        md = """
+    1. first
+    2. second
+    3. third
+    """
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>first</li><li>second</li><li>third</li></ol></div>",
+        )
+
+    def test_ordered_list_with_inline(self):
+        md = """
+    1. plain
+    2. with _italic_
+    3. and **bold** text
+    """
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>plain</li><li>with <i>italic</i></li><li>and <b>bold</b> text</li></ol></div>",
+        )
