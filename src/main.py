@@ -1,6 +1,6 @@
-from textnode import TextNode, TextType
+from site_generation import copy_source_to_dest_dir
 
 def main():
-    print("Nothing here for now...")
-
+    copy_source_to_dest_dir("static", "public")
+    
 main()
