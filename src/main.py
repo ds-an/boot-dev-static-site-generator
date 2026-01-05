@@ -1,4 +1,4 @@
-from site_generation import copy_source_to_dest_dir, generate_page, generate_pages_recursive
+from site_generation import copy_source_to_dest_dir, generate_pages_recursive
 import sys
 
 def main():

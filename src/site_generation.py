@@ -40,21 +40,15 @@ def generate_page(from_path, template_path, dest_path, basepath):
     template_file = open(template_path, 'r').read()
     from_path_html = markdown_to_html_node(from_path_md).to_html()
     page_title = extract_title(from_path_md)
-    print(from_path_html)
-    print(page_title)
     resulting_html = template_file.replace("{{ Title }}", f"{page_title}")
     resulting_html = resulting_html.replace("{{ Content }}", f"{from_path_html}")
     resulting_html = resulting_html.replace("href=\"/", f"href=\"{basepath}")
     resulting_html = resulting_html.replace("src=\"/", f"src=\"{basepath}")
-    print(basepath)
-    print(resulting_html)
 
     if not os.path.exists(dest_path):
         os.makedirs(dest_path)
     _, tail = os.path.split(from_path)
-    print(tail)
     dest_file_name, _ = tail.split(".")
-    print(dest_file_name)
     dest_file_name = dest_file_name + ".html"
     dest_file_path = os.path.join(dest_path, dest_file_name)
     with open(dest_file_path, "w", encoding="utf-8") as f:
@@ -69,12 +63,9 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
     current_dirs = []
     for filename in os.listdir(dir_path_content):
         file_path = os.path.join(dir_path_content, filename)
-        print(filename)
         if os.path.isfile(file_path):
-            print(file_path)
             current_files.append(file_path)
         if os.path.isdir(file_path):
-            print(file_path)
             current_dirs.append(file_path)
     for file in current_files:
         generate_page(file, template_path, dest_dir_path, basepath)
