@@ -57,3 +57,26 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_file_path, "w", encoding="utf-8") as f:
         f.write(resulting_html)
 
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    if not os.path.exists(dest_dir_path):
+        os.makedirs(dest_dir_path)
+    if not os.path.exists(dir_path_content):
+        raise Exception(f"{dir_path_content} does not exist")
+    current_files = []
+    current_dirs = []
+    for filename in os.listdir(dir_path_content):
+        file_path = os.path.join(dir_path_content, filename)
+        print(filename)
+        if os.path.isfile(file_path):
+            print(file_path)
+            current_files.append(file_path)
+        if os.path.isdir(file_path):
+            print(file_path)
+            current_dirs.append(file_path)
+    for file in current_files:
+        generate_page(file, template_path, dest_dir_path)
+        # shutil.copy(file, dest_dir_path)
+    for dir in current_dirs:
+        _, tail = os.path.split(dir)
+        new_dest = os.path.join(dest_dir_path, tail)
+        generate_pages_recursive(dir, template_path, new_dest)
