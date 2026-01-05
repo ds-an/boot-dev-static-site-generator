@@ -71,7 +71,6 @@ def quote_block_to_html_node(block):
 def paragraph_block_to_html_node(block):
     split_block = block.split("\n")
     split_block = [line.strip() for line in split_block]
-    # split_block = list(filter(lambda x: x != "", split_block))
     block = " ".join(split_block)
     return ParentNode("p", list(map(text_node_to_html_node, text_to_textnodes(block))))
 
